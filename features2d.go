@@ -335,6 +335,55 @@ func (o *ORB) DetectAndCompute(src Mat, mask Mat) ([]KeyPoint, Mat) {
 	return getKeyPoints(ret), desc
 }
 
+type SimpleBlobDetectorParams struct {
+	BlobColor uint8
+	FilterByArea bool
+	FilterByCircularity bool
+	FilterByColor bool
+	FilterByConvexity bool
+	FilterByInertia bool
+	MaxArea float32
+	MaxCircularity float32
+	MaxConvexity float32
+	MaxInertiaRatio float32
+	MaxThreshold float32
+	MinArea float32
+	MinCircularity float32
+	MinConvexity float32
+	MinDistBetweenBlobs float32
+	MinInertiaRatio float32
+	MinRepeatability int
+	MinThreshold float32
+	ThresholdStep float32
+}
+
+var DefaultSimpleBlobDetectorParams SimpleBlobDetectorParams
+
+func init() {
+	params := C.defaultSimpleBlobDetectorParams()
+	DefaultSimpleBlobDetectorParams = SimpleBlobDetectorParams{
+		ThresholdStep: float32(params.thresholdStep),
+		MinThreshold: float32(params.minThreshold),
+		MaxThreshold: float32(params.maxThreshold),
+		MinRepeatability: int(params.minRepeatability),
+		MinDistBetweenBlobs: float32(params.minDistBetweenBlobs),
+		FilterByColor: bool(params.filterByColor),
+		BlobColor: uint8(params.blobColor),
+		FilterByArea: bool(params.filterByArea),
+		MinArea: float32(params.minArea),
+		MaxArea: float32(params.maxArea),
+		FilterByCircularity: bool(params.filterByCircularity),
+		MinCircularity: float32(params.minCircularity),
+		MaxCircularity: float32(params.maxCircularity),
+		FilterByInertia: bool(params.filterByInertia),
+		MinInertiaRatio: float32(params.minInertiaRatio),
+		MaxInertiaRatio: float32(params.maxInertiaRatio),
+		FilterByConvexity: bool(params.filterByConvexity),
+		MinConvexity: float32(params.minConvexity),
+		MaxConvexity: float32(params.maxConvexity),
+	}
+}
+
 // SimpleBlobDetector is a wrapper around the cv::SimpleBlobDetector.
 type SimpleBlobDetector struct {
 	// C.SimpleBlobDetector
@@ -346,8 +395,32 @@ type SimpleBlobDetector struct {
 // For further details, please see:
 // https://docs.opencv.org/master/d0/d7a/classcv_1_1SimpleBlobDetector.html
 //
-func NewSimpleBlobDetector() SimpleBlobDetector {
-	return SimpleBlobDetector{p: unsafe.Pointer(C.SimpleBlobDetector_Create())}
+func NewSimpleBlobDetector(params *SimpleBlobDetectorParams) SimpleBlobDetector {
+	var cParams *C.SimpleBlobDetectorParams
+	if params != nil {
+		cParams = &C.SimpleBlobDetectorParams{
+			thresholdStep: C.float(params.ThresholdStep),
+			minThreshold: C.float(params.MinThreshold),
+			maxThreshold: C.float(params.MaxThreshold),
+			minRepeatability: C.size_t(params.MinRepeatability),
+			minDistBetweenBlobs: C.float(params.MinDistBetweenBlobs),
+			filterByColor: C.bool(params.FilterByColor),
+			blobColor: C.uchar(params.BlobColor),
+			filterByArea: C.bool(params.FilterByArea),
+			minArea: C.float(params.MinArea),
+			maxArea: C.float(params.MaxArea),
+			filterByCircularity: C.bool(params.FilterByCircularity),
+			minCircularity: C.float(params.MinCircularity),
+			maxCircularity: C.float(params.MaxCircularity),
+			filterByInertia: C.bool(params.FilterByInertia),
+			minInertiaRatio: C.float(params.MinInertiaRatio),
+			maxInertiaRatio: C.float(params.MaxInertiaRatio),
+			filterByConvexity: C.bool(params.FilterByConvexity),
+			minConvexity: C.float(params.MinConvexity),
+			maxConvexity: C.float(params.MaxConvexity),
+		}
+	}
+	return SimpleBlobDetector{p: unsafe.Pointer(C.SimpleBlobDetector_Create(cParams))}
 }
 
 // Close SimpleBlobDetector.

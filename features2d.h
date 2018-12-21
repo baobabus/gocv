@@ -68,7 +68,27 @@ void ORB_Close(ORB o);
 struct KeyPoints ORB_Detect(ORB o, Mat src);
 struct KeyPoints ORB_DetectAndCompute(ORB o, Mat src, Mat mask, Mat desc);
 
-SimpleBlobDetector SimpleBlobDetector_Create();
+typedef struct SimpleBlobDetectorParams {
+      float thresholdStep;
+      float minThreshold;
+      float maxThreshold;
+      size_t minRepeatability;
+      float minDistBetweenBlobs;
+      bool filterByColor;
+      unsigned char blobColor;
+      bool filterByArea;
+      float minArea, maxArea;
+      bool filterByCircularity;
+      float minCircularity, maxCircularity;
+      bool filterByInertia;
+      float minInertiaRatio, maxInertiaRatio;
+      bool filterByConvexity;
+      float minConvexity, maxConvexity;
+} SimpleBlobDetectorParams;
+
+SimpleBlobDetectorParams *defaultSimpleBlobDetectorParams();
+
+SimpleBlobDetector SimpleBlobDetector_Create(SimpleBlobDetectorParams *param);
 void SimpleBlobDetector_Close(SimpleBlobDetector b);
 struct KeyPoints SimpleBlobDetector_Detect(SimpleBlobDetector b, Mat src);
 

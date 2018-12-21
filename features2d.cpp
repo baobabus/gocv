@@ -276,9 +276,61 @@ struct KeyPoints ORB_DetectAndCompute(ORB o, Mat src, Mat mask, Mat desc) {
     return ret;
 }
 
-SimpleBlobDetector SimpleBlobDetector_Create() {
+SimpleBlobDetectorParams *_defaultSimpleBlobDetectorParams;
+
+SimpleBlobDetectorParams *defaultSimpleBlobDetectorParams() {
+    // not reentrant!
+    if (_defaultSimpleBlobDetectorParams == NULL) {
+        cv::SimpleBlobDetector::Params params;
+        _defaultSimpleBlobDetectorParams = new SimpleBlobDetectorParams();
+        _defaultSimpleBlobDetectorParams->thresholdStep = params.thresholdStep;
+        _defaultSimpleBlobDetectorParams->minThreshold = params.minThreshold;
+        _defaultSimpleBlobDetectorParams->maxThreshold = params.maxThreshold;
+        _defaultSimpleBlobDetectorParams->minRepeatability = params.minRepeatability;
+        _defaultSimpleBlobDetectorParams->minDistBetweenBlobs = params.minDistBetweenBlobs;
+        _defaultSimpleBlobDetectorParams->filterByColor = params.filterByColor;
+        _defaultSimpleBlobDetectorParams->blobColor = params.blobColor;
+        _defaultSimpleBlobDetectorParams->filterByArea = params.filterByArea;
+        _defaultSimpleBlobDetectorParams->minArea = params.minArea;
+        _defaultSimpleBlobDetectorParams->maxArea = params.maxArea;
+        _defaultSimpleBlobDetectorParams->filterByCircularity = params.filterByCircularity;
+        _defaultSimpleBlobDetectorParams->minCircularity = params.minCircularity;
+        _defaultSimpleBlobDetectorParams->maxCircularity = params.maxCircularity;
+        _defaultSimpleBlobDetectorParams->filterByInertia = params.filterByInertia;
+        _defaultSimpleBlobDetectorParams->minInertiaRatio = params.minInertiaRatio;
+        _defaultSimpleBlobDetectorParams->maxInertiaRatio = params.maxInertiaRatio;
+        _defaultSimpleBlobDetectorParams->filterByConvexity = params.filterByConvexity;
+        _defaultSimpleBlobDetectorParams->minConvexity = params.minConvexity;
+        _defaultSimpleBlobDetectorParams->maxConvexity = params.maxConvexity;
+    }
+    return _defaultSimpleBlobDetectorParams;
+}
+
+SimpleBlobDetector SimpleBlobDetector_Create(SimpleBlobDetectorParams *params) {
     // TODO: params
-    return new cv::Ptr<cv::SimpleBlobDetector>(cv::SimpleBlobDetector::create());
+    cv::SimpleBlobDetector::Params pars;
+    if (params) {
+        pars.thresholdStep = params->thresholdStep;
+        pars.minThreshold = params->minThreshold;
+        pars.maxThreshold = params->maxThreshold;
+        pars.minRepeatability = params->minRepeatability;
+        pars.minDistBetweenBlobs = params->minDistBetweenBlobs;
+        pars.filterByColor = params->filterByColor;
+        pars.blobColor = params->blobColor;
+        pars.filterByArea = params->filterByArea;
+        pars.minArea = params->minArea;
+        pars.maxArea = params->maxArea;
+        pars.filterByCircularity = params->filterByCircularity;
+        pars.minCircularity = params->minCircularity;
+        pars.maxCircularity = params->maxCircularity;
+        pars.filterByInertia = params->filterByInertia;
+        pars.minInertiaRatio = params->minInertiaRatio;
+        pars.maxInertiaRatio = params->maxInertiaRatio;
+        pars.filterByConvexity = params->filterByConvexity;
+        pars.minConvexity = params->minConvexity;
+        pars.maxConvexity = params->maxConvexity;
+    }
+    return new cv::Ptr<cv::SimpleBlobDetector>(cv::SimpleBlobDetector::create(pars));
 }
 
 void SimpleBlobDetector_Close(SimpleBlobDetector b) {
